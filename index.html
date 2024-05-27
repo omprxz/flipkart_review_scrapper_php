@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <meta
+            http-equiv="X-UA-Compatible"
+            content="ie=edge"
+        />
+        <title>Flipkart Review Scrapper</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+            rel="stylesheet"
+        />
+        <style type="text/css">
+            body {
+                font-family: Roboto;
+            }
+
+            .downloadCsv {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h2 class="text-center fw-semibold my-4">
+                Flipkart Review Scrapper
+            </h2>
+            <form
+                action="#"
+                class="px-2"
+                method="get"
+                accept-charset="utf-8"
+            >
+                <div class="form-floating">
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="productLink"
+                        id="productLink"
+                        placeholder=" "
+                    />
+                    <label for="productLink">Flipkart product link</label>
+                </div>
+                <div class="text-center my-3">
+                    <button
+                        type="button"
+                        class="btn btn-primary getReviews"
+                    >
+                        Get Reviews
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary downloadCsv"
+                        id="downloadCsv"
+                    >
+                        Download CSV
+                    </button>
+                </div>
+            </form>
+            <div id="loader"></div>
+            <div
+                class="my-2"
+                id="result"
+            ></div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script
+            src="components/eruda.js"
+            type="text/javascript"
+            charset="utf-8"
+        ></script>
+        <script
+            src="components/main.js"
+            type="text/javascript"
+            charset="utf-8"
+        ></script>
+    </body>
+</html>
