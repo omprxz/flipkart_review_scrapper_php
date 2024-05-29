@@ -246,6 +246,7 @@
                 ]);
                 
                 sentimentScore = 0
+                totalLikeDislikeAdded = 0
                 totalScore = 0
                 var sentimentPercentage = 0
                 cLog(filteredReviews)
@@ -258,37 +259,44 @@
                   if(likeDislikeAdded==0){
                     let likeDislikeAdded = 1
                   }
+                  totalLikeDislikeAdded += likeDislikeAdded
                   let weight = 0
                  switch (parseInt(v[0])) {
     case 5:
         weight = 5;
-        sentimentScore += (likeDislikeRatio * weight) + weight;
-        totalScore += (likeDislikeAdded * Math.abs(weight)) + weight;
+        sentimentScore += (likeDislikeRatio + 1) * weight;
+        totalScore += (likeDislikeAdded + 1) * 5;
+        console.log(sentimentScore, totalScore)
         break;
     case 4:
         weight = 4;
-        sentimentScore += (likeDislikeRatio * weight) + weight;
-        totalScore += (likeDislikeAdded * Math.abs(weight)) + weight;
+        sentimentScore += (likeDislikeRatio + 1) * weight;
+        totalScore += (likeDislikeAdded + 1) * 5;
+        console.log(sentimentScore, totalScore)
         break;
     case 3:
-        weight = 2.5;
-        sentimentScore += (likeDislikeRatio * weight) + weight;
-        totalScore += (likeDislikeAdded * Math.abs(weight)) + weight;
+        weight = 3;
+        sentimentScore += (likeDislikeRatio + 1) * weight;
+        totalScore += (likeDislikeAdded + 1) * 5;
+        console.log(sentimentScore, totalScore)
         break;
     case 2:
-        weight = -4;
-        sentimentScore += (likeDislikeRatio * weight) + weight;
-        totalScore += (likeDislikeAdded * Math.abs(weight)) + weight;
+        weight = 2;
+        sentimentScore += (likeDislikeRatio + 1) * weight;
+        totalScore += (likeDislikeAdded + 1) * 5;
+        console.log(sentimentScore, totalScore)
         break;
     case 1:
-        weight = -5;
-        sentimentScore += (likeDislikeRatio * weight) + weight;
-        totalScore += (likeDislikeAdded * Math.abs(weight)) + weight;
+        weight = 1;
+        sentimentScore += (likeDislikeRatio + 1) * weight;
+        totalScore += (likeDislikeAdded + 1) * 5;
+        console.log(sentimentScore, totalScore)
         break;
 }
                   
                   
                 })
+              //  totalScore = filteredReviews.length * totalLikeDislikeAdded * 5
                 cLog(sentimentScore)
                 cLog(totalScore)
                 
@@ -309,7 +317,7 @@
                     sentimentPercentage = Math.round(( sentimentScore/totalScore ) * 100)
                     cLog(sentimentPercentage)
                     
-                   // responseJson.sentimentScore = sentimentPercentage
+                    responseJson.sentimentScore = sentimentPercentage
                     $("#sentiment-progress")
                         .text(responseJson.sentimentScore + "%")
                         .css("width", responseJson.sentimentScore + "%")

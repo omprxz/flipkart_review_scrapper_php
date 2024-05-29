@@ -16,9 +16,10 @@ const cErr = (msg) => console.error(msg);
 var allReviews = [], isAiFetched = true;
 var sentimentScore = 0
 var totalScore = 0;
+var totalLikeDislikeAdded = 0
 var prompt = `I have a list of reviews in the following nested array format: [[rating, 'review content', users_liked, users_disliked], ...]. The elements represent:rating: The rating of the review (1 to 5).review content: The actual text of the review.users_liked: The number of users who liked the review.users_disliked: The number of users who disliked the review.
         Reviews input: REVIEWS_ARRAY_QWE
-        I need you to analyze these reviews and generate the following outputs:sentimentScore: sentiment scroe of whole reviewstext combined, Pros: A list of 3 to 5 positive aspects after analysing reviews (pros).Cons: A list of 3 to 5 negative aspects after analysing reviews (cons) .Summary: A single or may be double, simple paragraph summarizing the overall product reviews in approximately 50 words. either keep the summary mostly positive or mostly negative based on the sentiment score of whole reviews text combined if above 50 then positive or if below 50 then negative & it should be like human written.Please provide the output in a JSON code block and JSON format with the following keys:pros: [list of 3 to 5 pros]cons: [list of 3 to 5 cons]summary: (summary text) Example output:{
+        I need you to analyze these reviews and generate the following outputs:sentimentScore: sentiment scroe of whole reviewstext combined, Pros: A list of 3 to 5 positive aspects after analysing reviews (pros).Cons: A list of 3 to 5 negative aspects after analysing reviews (cons). Don't give the any exact reviews in pros & cons. Pros & cons must be generated after overall analysis of all reviews. Summary: A single or may be double, simple paragraph summarizing the overall product reviews in approximately 50 words. either keep the summary mostly positive or mostly negative based on the sentiment score of whole reviews text combined if above 50 then positive or if below 50 then negative & it should be like human written.Please provide the output in a JSON code block and JSON format with the following keys:pros: [list of 3 to 5 pros]cons: [list of 3 to 5 cons]summary: (summary text) Example output:{
         "sentimentScore": 78,
             "pros": ["Excellent quality", "Very happy", "Awesome product"],
             "cons": ["Not worth the money", "Worst product"],
@@ -26,7 +27,7 @@ var prompt = `I have a list of reviews in the following nested array format: [[r
         }`;
         
 $(document).ready(function () {
-  //$("#productLink").val('https://www.flipkart.com/bruton-fitman-slip-sneakers-men/p/itm90c3fa77f0e96?pid=SHOGCHXHFGCXVR2R&lid=LSTSHOGCHXHFGCXVR2RR9I29O&marketplace=FLIPKART&pageUID=1716908370885');
+  $("#productLink").val('https://www.flipkart.com/leosportz-adjustable-weight-lifting-wrist-support-band/p/itmfcgqhw6pmhceb?pid=SUPFCG7GUSCQHSYH&lid=LSTSUPFCG7GUSCQHSYHERLIVJ&marketplace=FLIPKART&pageUID=1716972429226');
   
   $(".getReviews").click(function () {
     let productLink = $("#productLink").val();
