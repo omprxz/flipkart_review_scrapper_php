@@ -11,16 +11,31 @@ const Toast = Swal.mixin({
       Swal.resumeTimer)
   }
 })
+const cLog = (msg) => console.log(msg);
+const cErr = (msg) => console.error(msg);
+var allReviews = [], isAiFetched = true;
+var prompt = `I have a list of reviews in the following nested array format: [[rating, 'review content', users_liked, users_disliked], ...]. The elements represent:rating: The rating of the review (1 to 5).review content: The actual text of the review.users_liked: The number of users who liked the review.users_disliked: The number of users who disliked the review.
+        Reviews input: REVIEWS_ARRAY_QWE
+        I need you to analyze these reviews and generate the following outputs:Overall Sentiment Score: An overall sentiment score out of 100 based on the review content.Pros: A list of 3 to 5 positive aspects after analysing reviews (pros).Cons: A list of 3 to 5 negative aspects after analysing reviews (cons) .Summary: A single or may be double, simple paragraph summarizing the overall product reviews in approximately 50 words. either keep the summary mostly positive or mostly negative based on the sentiment score if above 50 then positive or if below 50 then negative & it should be like human written.Please provide the output in a JSON code block and JSON format with the following keys:sentimentScore: (overall sentiment score out of 100)pros: [list of 3 to 5 pros]cons: [list of 3 to 5 cons]summary: (summary text) Example output:{
+            "sentimentScore": 78,
+            "pros": ["Excellent quality", "Very happy", "Awesome product"],
+            "cons": ["Not worth the money", "Worst product"],
+            "summary": "Overall, the product has received mostly positive reviews for its quality and satisfaction, though some users found it not worth the money."
+        }`;
+        
 $(document).ready(function () {
-  const cLog = (msg) => console.log(msg);
-  const cErr = (msg) => console.error(msg);
-
-  let allReviews = [];
 
   $(".getReviews").click(function () {
-    const productLink = $("#productLink").val();
+    let productLink = $("#productLink").val();
+    if(productLink!=''){
     const reviewLink = product2reviewLink(productLink);
     loadReviewContent(reviewLink);
+    }else{
+      Toast.fire({
+        title: 'Provide product link',
+        icon: 'error'
+      })
+    }
   });
 
   function product2reviewLink(link) {
@@ -37,9 +52,20 @@ $(document).ready(function () {
   }
 
   function loadReviewContent(reviewLink) {
+    $('#reviews-data').addClass('d-none');
+    $('#reviews-data').removeClass('d-flex');
     $("#result").html("");
+    isAiFetched=false;
     var sno = 1;
     allReviews = [];
+    $("#sentiment-progress").text(0 + "%").css("width", 0 + "%").attr("aria-valuenow", 0);
+    $('.ai-pros').html('')
+    $('.ai-cons').html('')
+    $('.ai-summary').html('')
+    $('.overview-loader').removeClass('d-none')
+    $('.overview-loader').addClass('d-flex')
+    $('.overview').addClass('d-none')
+    $('.overview').removeClass('d-block')
 
     $("#downloadCsv").css("display", "none");
     const getReviews = $(".getReviews");
@@ -68,6 +94,7 @@ $(document).ready(function () {
           if (totalReviews > 0) {
             const totalPages = Math.ceil(totalReviews / 10);
             let formattedReviews = "";
+            $('#reviews-data').toggleClass('d-flex d-none')
             for (let i = 1; i <= totalPages; i++) {
               formattedReviews = "";
               const reviewPageLink = reviewLink + "&page=" + i;
@@ -222,4 +249,5 @@ $(document).ready(function () {
     const csv = convertToCSV(allReviews);
     downloadCSV(csv, "reviews.csv");
   });
+  
 });

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html>
     <head>
         <meta charset="UTF-8" />
         <meta
@@ -16,24 +16,32 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
         />
         <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        />
+
+        <link
             href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
             rel="stylesheet"
         />
-        <style type="text/css">
+        <style>
             body {
                 font-family: Roboto;
             }
-
             .downloadCsv {
                 display: none;
             }
+            .overview-loader{
+              width: 100vw !important;
+              background: rgba(0, 0, 0, 0.1);
+              height: 500px !important;
+            }
         </style>
     </head>
-
     <body>
         <div class="container">
             <h2 class="text-center fw-semibold my-4">
-                Flipkart Review Scrapper
+                Flipkart Reviews Scrapper
             </h2>
             <form
                 action="#"
@@ -48,45 +56,213 @@
                         name="productLink"
                         id="productLink"
                         placeholder=" "
+                        value=""
                     />
                     <label for="productLink">Flipkart product link</label>
                 </div>
                 <div class="text-center my-3">
                     <button
                         type="button"
-                        class="btn btn-primary getReviews"
+                        class="btn btn-success getReviews"
                     >
                         Get Reviews
                     </button>
                     <button
                         type="button"
-                        class="btn btn-secondary downloadCsv"
+                        class="btn btn-dark downloadCsv"
                         id="downloadCsv"
                     >
-                        Download CSV
+                        <i class="fas fa-download"></i>&nbsp; Reviews
                     </button>
                 </div>
             </form>
-            <div id="loader"></div>
+
             <div
-                class="my-2"
-                id="result"
-            ></div>
+                class="d-none flex-column justify-content-center align-items-center reviews-data"
+                id="reviews-data"
+            >
+              <hr class="bg-danger mt-0 mb-3 border-2 border-top border-secondary w-100" />
+                <ul
+                    class="nav nav-pills mb-3"
+                    id="pills-tab"
+                    role="tablist"
+                >
+                    <li
+                        class="nav-item"
+                        role="presentation"
+                    >
+                        <button
+                            class="nav-link active"
+                            id="pills-result-tab"
+                            data-bs-toggle="pill"
+                            data-bs-target="#pills-result"
+                            type="button"
+                            role="tab"
+                            aria-controls="pills-home"
+                            aria-selected="true"
+                        >
+                            All Reviews
+                        </button>
+                    </li>
+                    <li
+                        class="nav-item"
+                        role="presentation"
+                    >
+                        <button
+                            class="nav-link"
+                            id="pills-summary-tab"
+                            data-bs-toggle="pill"
+                            data-bs-target="#pills-summary"
+                            type="button"
+                            role="tab"
+                            aria-controls="pills-profile"
+                            aria-selected="false"
+                        >
+                            AI Overview
+                        </button>
+                    </li>
+                </ul>
+                <div
+                    class="tab-content"
+                    id="pills-tabContent"
+                >
+                    <div
+                        class="tab-pane fade show active"
+                        id="pills-result"
+                        role="tabpanel"
+                        aria-labelledby="pills-result-tab"
+                    >
+                        <div
+                            class="my-2"
+                            id="result"
+                        ></div>
+                    </div>
+                    <div
+                        class="tab-pane fade"
+                        id="pills-summary"
+                        role="tabpanel"
+                        aria-labelledby="pills-summary-tab"
+                    >
+                      <div class="overview-loader d-flex flex-column justify-content-center align-items-center">
+                        <div class="spinner-grow text-primary" style="width:3rem;height:3rem;" role="status" aria-hidden="true"></div>
+                        <p class="text-center mt-3 fw-bold">Analysing</p>
+                      </div>
+                      <div class="container mb-3 overview d-none">
+  <div class="row mt-3 mb-2">
+    <div class="col">
+      <p class="mb-1">Overall Score:</p>
+      <div class="progress">
+        <div id="sentiment-progress" class="progress-bar bg-success ai-score" role="progressbar" aria-valuemin="0" aria-valuemax="100">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4 mb-0">
+    <div class="col">
+      <div class="alert alert-success mb-0" role="alert">
+        <h4 class="alert-heading">Pros</h4>
+        <ul class="ai-pros">
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-2 mb-0">
+    <div class="col">
+      <div class="alert alert-danger mb-0" role="alert">
+        <h4 class="alert-heading">Cons</h4>
+        <ul class="ai-cons">
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mt-3 mb-0">
+    <div class="col">
+      <div class="alert alert-primary mb-0" role="alert">
+        <h4 class="alert-heading">In short</h4>
+        <p class="ai-summary"></p>
+      </div>
+    </div>
+  </div>
+</div>
+                    </div>
+                </div>
+            </div>
+            
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        <script
-            src="components/eruda.js"
-            type="text/javascript"
-            charset="utf-8"
-        ></script>
-        <script
-            src="components/main.js"
-            type="text/javascript"
-            charset="utf-8"
-        ></script>
+        <script src="components/eruda.js"></script>
+        <script src="components/main.js"></script>
+        
+         <script type="importmap">
+      {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+  </script>
+        <script type="module">
+            import { GoogleGenerativeAI } from "@google/generative-ai";
+            const API_KEY = "AIzaSyDs40xNTlEcGD_xA--Rx-K191toiJNQbEA";
+            var finalPrompt;
+            const genAI = new GoogleGenerativeAI(API_KEY);
+        
+            async function aiGenerateOverview(prompt, reviews) {
+              const filteredReviews = reviews.map(review => [
+    review.rating,
+    review.content,
+    review.likes,
+    review.dislikes
+]);
+              finalPrompt = prompt.replace(/REVIEWS_ARRAY_QWE/gi, JSON.stringify(filteredReviews))
+                    try {
+                        const model = genAI.getGenerativeModel({
+                            model: "gemini-pro"
+                        });
+                        const result = await model.generateContent(finalPrompt);
+                        const response = await result.response;
+                        const responseText = await response.text();
+                      const jsonRegex = /```json([^`]+)```/;
+                      const respMatch = responseText.match(jsonRegex);
+                      const responseJson = JSON.parse(respMatch[1].trim());
+                      
+                      $("#sentiment-progress").text(responseJson.sentimentScore + "%").css("width", responseJson.sentimentScore + "%").attr("aria-valuenow", responseJson.sentimentScore);
+                    if (responseJson.sentimentScore >= 50) {
+                            $("#sentiment-progress").addClass("bg-success");
+                      } else {
+                      $("#sentiment-progress").addClass("bg-danger");
+                        }
+                        
+                    $.each(responseJson.pros , function(i, v){
+                      $('.ai-pros').append('<li>'+v+'</li>')
+                    })
+                    $.each(responseJson.cons , function(i, v){
+                      $('.ai-cons').append('<li>'+v+'</li>')
+                    })
+                      
+                    $('.ai-summary').text(responseJson.summary)
+                    
+                    $('.overview-loader').addClass('d-none')
+                    $('.overview-loader').removeClass('d-flex')
+                    $('.overview').addClass('d-block')
+                    $('.overview').removeClass('d-none')
+                      
+                      console.log(responseJson)
+                    } catch (error) {
+                        console.error("Error generating response:", error);
+                    }
+            }
+            
+        $('#pills-summary-tab').click(function(){
+          if(!isAiFetched){
+          aiGenerateOverview(prompt, allReviews)
+          isAiFetched=true
+          }
+        })
+        </script>
     </body>
 </html>
