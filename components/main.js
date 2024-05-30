@@ -40,7 +40,6 @@ summary: (summary text) Example output:{
 }`;
 
 $(document).ready(function () {
-  $("#productLink").val('https://www.flipkart.com/leosportz-adjustable-weight-lifting-wrist-support-band/p/itmfcgqhw6pmhceb?pid=SUPFCG7GUSCQHSYH&lid=LSTSUPFCG7GUSCQHSYHERLIVJ&marketplace=FLIPKART&pageUID=1716972429226');
 
   $(".getReviews").click(function () {
     let productLink = $("#productLink").val();
