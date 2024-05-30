@@ -36,6 +36,12 @@ The project consists of three main components:
   - Extracts detailed information from Flipkart reviews, including title, text, rating, user name, user address, review likes, dislikes, and review date.
   - Provides an option to download fetched reviews in CSV format for further analysis.
 
+## Additional File Details
+
+In this project, alongside the primary scripts `main.js` and `scrape.php`, you'll find additional scripts `main2.js` and `scrape2.php`. These complementary scripts are designed to work together seamlessly, enhancing the functionality provided by their counterparts.
+
+One notable difference is in the data scraping mechanism employed. While `main.js` and `scrape.php` utilize PHP for data scraping, `main2.js` and `scrape2.php` leverage jQuery and JavaScript for this purpose. This approach offers flexibility and efficiency in handling reviews data, catering to different project requirements and preferences.
+
 ## Usage
 
 1. Clone the repository to your local machine.
