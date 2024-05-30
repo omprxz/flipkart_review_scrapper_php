@@ -249,7 +249,6 @@
                 totalLikeDislikeAdded = 0
                 totalScore = 0
                 var sentimentPercentage = 0
-                cLog(filteredReviews)
                 $.each(filteredReviews, function(i, v){
                   let likeDislikeRatio = parseInt(v[2]) - parseInt(v[3])
                   if(likeDislikeRatio==0){
@@ -266,39 +265,31 @@
         weight = 5;
         sentimentScore += (likeDislikeRatio + 1) * weight;
         totalScore += (likeDislikeAdded + 1) * 5;
-        console.log(sentimentScore, totalScore)
         break;
     case 4:
         weight = 4;
         sentimentScore += (likeDislikeRatio + 1) * weight;
         totalScore += (likeDislikeAdded + 1) * 5;
-        console.log(sentimentScore, totalScore)
         break;
     case 3:
         weight = 3;
         sentimentScore += (likeDislikeRatio + 1) * weight;
         totalScore += (likeDislikeAdded + 1) * 5;
-        console.log(sentimentScore, totalScore)
         break;
     case 2:
         weight = 2;
         sentimentScore += (likeDislikeRatio + 1) * weight;
         totalScore += (likeDislikeAdded + 1) * 5;
-        console.log(sentimentScore, totalScore)
         break;
     case 1:
         weight = 1;
         sentimentScore += (likeDislikeRatio + 1) * weight;
         totalScore += (likeDislikeAdded + 1) * 5;
-        console.log(sentimentScore, totalScore)
         break;
 }
                   
                   
                 })
-              //  totalScore = filteredReviews.length * totalLikeDislikeAdded * 5
-                cLog(sentimentScore)
-                cLog(totalScore)
                 
                 finalPrompt = prompt.replace(
                     /REVIEWS_ARRAY_QWE/gi,
@@ -315,7 +306,6 @@
                     const respMatch = responseText.match(jsonRegex);
                     const responseJson = JSON.parse(respMatch[1].trim());
                     sentimentPercentage = Math.round(( sentimentScore/totalScore ) * 100)
-                    cLog(sentimentPercentage)
                     
                     responseJson.sentimentScore = sentimentPercentage
                     $("#sentiment-progress")
