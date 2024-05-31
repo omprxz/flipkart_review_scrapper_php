@@ -55,8 +55,10 @@ One notable difference is in the data scraping mechanism employed. While `main.j
 2. Run this commamd to clone the project to your local storage
    ```sh 
    git clone https://github.com/omprxz/flipkart_review_scrapper_php.git
+  ```
+  ```sh
    cd flipkart_review_scrapper_php
-    ```
+  ```
 3. Execute `scrape.php` file with this command format:
    ```sh
    php scrape.php url=https://www.flipkart.com/xxxxx...
