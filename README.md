@@ -53,12 +53,13 @@ One notable difference is in the data scraping mechanism employed. While `main.j
 `scrape.php` **also support terminal support for reviews scarpping.**
 1. Install PHP in your OS (like Linux, MacOS or Termux)
 2. Run this commamd to clone the project to your local storage
+
    ```sh 
    git clone https://github.com/omprxz/flipkart_review_scrapper_php.git
-  ```
-  ```sh
+   ```
+   ```sh
    cd flipkart_review_scrapper_php
-  ```
+   ```
 3. Execute `scrape.php` file with this command format:
    ```sh
    php scrape.php url=https://www.flipkart.com/xxxxx...
