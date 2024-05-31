@@ -50,7 +50,7 @@ One notable difference is in the data scraping mechanism employed. While `main.j
 4. Explore the fetched reviews and AI-generated overview for insights.
 
 ## Bonus (Terminal Support)
-__`scrape.php` also support terminal support for reviews scarpping.__
+`scrape.php`** also support terminal support for reviews scarpping.**
 1. Install PHP in your OS (like Linux, MacOS or Termux)
 2. Run this commamd to clone the project to your local storage
    ```sh 
