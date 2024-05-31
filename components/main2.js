@@ -84,7 +84,7 @@ $(document).ready(function () {
     const originalButtonText = getReviews.html();
 
     $.ajax({
-      url: "scrape.php",
+      url: "scrape2.php",
       method: "GET",
       data: {
         url: reviewLink
@@ -111,7 +111,7 @@ $(document).ready(function () {
               formattedReviews = "";
               const reviewPageLink = reviewLink + "&page=" + i;
               $.ajax({
-                url: "scrape.php",
+                url: "scrape2.php",
                 type: "get",
                 async: false,
                 data: {

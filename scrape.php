@@ -5,9 +5,11 @@ if (isset($_GET['url'])) {
     
     $reviewLink = product2reviewLink($url);
     $html = fetchContent($reviewLink);
-    //echo($html);
+
+    libxml_use_internal_errors(true); // Suppress HTML5 parsing warnings
     $doc = new DOMDocument();
     $doc->loadHTML($html);
+    libxml_clear_errors(); // Clear any errors
 
     $xpath = new DOMXPath($doc);
     
@@ -15,57 +17,54 @@ if (isset($_GET['url'])) {
     preg_match($pattern, $html, $matches);
     $totalReviews = isset($matches[1]) ? (int)str_replace(",", "", $matches[1]) : 0;
     
-    if($totalReviews > 0){
-      $totalPages = ceil($totalReviews/10);
-      $allReviews = array_merge($allReviews, extractDetails($xpath));
-      if($totalPages > 1){
-      for($page = 2; $page <= $totalPages; $page++){
-        $rvLink = product2reviewLink($url, $page);
-        $html = fetchContent($rvLink);
-        //echo($html);
-        $doc = new DOMDocument();
-        $doc->loadHTML($html);
-        $xpath = new DOMXPath($doc);
-        $allReviews = array_merge($allReviews, extractDetails($xpath, 11));
-        
-      }
-      
-      }
-      echo(json_encode($allReviews));
-    }else{
-      echo "No reviews.";
+    if ($totalReviews > 0) {
+        $totalPages = ceil($totalReviews / 10);
+        $allReviews = array_merge($allReviews, extractDetails($xpath));
+        if ($totalPages > 1) {
+            for ($page = 2; $page <= $totalPages; $page++) {
+                $rvLink = product2reviewLink($url, $page);
+                $html = fetchContent($rvLink);
+                
+                libxml_use_internal_errors(true); // Suppress HTML5 parsing warnings
+                $doc = new DOMDocument();
+                $doc->loadHTML($html);
+                libxml_clear_errors(); // Clear any errors
+                
+                $xpath = new DOMXPath($doc);
+                $allReviews = array_merge($allReviews, extractDetails($xpath, (10 * ($page - 1) + 1)));
+            }
+        }
+        echo json_encode($allReviews);
+    } else {
+        echo "No reviews.";
     }
-
-
 } else {
     echo "No URL provided.";
 }
 
-
-function extractDetails($xpath, $serial = 1){
-  $elements = $xpath->query("//*[contains(@class, 'cPHDOP')]");
-  $allR = [];
-  $sno= $serial;
-   for ($i = 1; $i < ($elements->length - 1); $i++) {
-     
+function extractDetails($xpath, $serial = 1) {
+    $elements = $xpath->query("//*[contains(@class, 'cPHDOP')]");
+    $allR = [];
+    $sno = $serial;
+    for ($i = 1; $i < ($elements->length - 1); $i++) {
         $element = $elements->item($i);
         $userNameQuery = $xpath->query(".//*[contains(@class, '_2NsDsF')]", $element);
-        if($userNameQuery->length > 0){
-          $title = $xpath->query(".//*[contains(@class, 'z9E0IG')]", $element)->item(0)->textContent;
-        $rating = $xpath->query(".//*[contains(@class, 'XQDdHH')]", $element)->item(0)->textContent;
-        $contentElement = $xpath->query(".//*[contains(@class, 'ZmyHeo')]", $element)->item(0);
-        $content = $contentElement->textContent;
-        $content = trim(str_replace("READ MORE", "", $content));
-        
-        if ($xpath->query(".//*[contains(@class, 'XQDdHH')]", $contentElement)->length > 0) {
-            $content = substr($content, 1);
-        }
-        $userName = $xpath->query(".//*[contains(@class, '_2NsDsF')]", $element)->item(0)->textContent;
-        $userAddress = $xpath->query(".//*[contains(@class, 'MztJPv')]/span[2]", $element)->item(0)->textContent;
-        $userAddress = str_replace(",", "", $userAddress);
-        $daysAgo = $xpath->query(".//*[contains(@class, '_2NsDsF')][last()]", $element)->item(0)->textContent;
-        $likes = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element)->item(0)->textContent;
-        $dislikes = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element)->item(1)->textContent;
+        if ($userNameQuery->length > 0) {
+            $title = $xpath->query(".//*[contains(@class, 'z9E0IG')]", $element)->item(0)->textContent;
+            $rating = $xpath->query(".//*[contains(@class, 'XQDdHH')]", $element)->item(0)->textContent;
+            $contentElement = $xpath->query(".//*[contains(@class, 'ZmyHeo')]", $element)->item(0);
+            $content = $contentElement->textContent;
+            $content = trim(str_replace("READ MORE", "", $content));
+            
+            if ($xpath->query(".//*[contains(@class, 'XQDdHH')]", $contentElement)->length > 0) {
+                $content = substr($content, 1);
+            }
+            $userName = $xpath->query(".//*[contains(@class, '_2NsDsF')]", $element)->item(0)->textContent;
+            $userAddress = $xpath->query(".//*[contains(@class, 'MztJPv')]/span[2]", $element)->item(0)->textContent;
+            $userAddress = str_replace(",", "", $userAddress);
+            $daysAgo = $xpath->query(".//*[contains(@class, '_2NsDsF')][last()]", $element)->item(0)->textContent;
+            $likes = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element)->item(0)->textContent;
+            $dislikes = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element)->item(1)->textContent;
         }
 
         if ($rating && $content && $userName && $daysAgo) {
@@ -82,9 +81,10 @@ function extractDetails($xpath, $serial = 1){
             ];
             $sno++;
         }
-    } 
+    }
     return $allR;
 }
+
 function product2reviewLink($link, $page = null) {
     $url_obj = parse_url($link);
     $pathname = $url_obj['path'];
@@ -108,12 +108,12 @@ function product2reviewLink($link, $page = null) {
     return $new_url;
 }
 
-function fetchContent($url){
+function fetchContent($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
-    if(curl_errno($ch)) {
+    if (curl_errno($ch)) {
         echo 'Curl error: ' . curl_error($ch);
     }
     curl_close($ch);
