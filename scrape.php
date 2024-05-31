@@ -1,4 +1,19 @@
 <?php
+function parseArguments($argv) {
+    $args = [];
+    foreach ($argv as $arg) {
+        if (strpos($arg, '=') !== false) {
+            list($key, $value) = explode('=', $arg, 2);
+            $args[$key] = $value;
+        }
+    }
+    return $args;
+}
+if($argv){
+  array_shift($argv);
+  $_GET = parseArguments($argv);
+}
+
 if (isset($_GET['url'])) {
     $url = $_GET['url'];
     $allReviews = [];
@@ -8,7 +23,7 @@ if (isset($_GET['url'])) {
 
     libxml_use_internal_errors(true); // Suppress HTML5 parsing warnings
     $doc = new DOMDocument();
-    $doc->loadHTML($html);
+    @$doc->loadHTML($html);
     libxml_clear_errors(); // Clear any errors
 
     $xpath = new DOMXPath($doc);
@@ -27,14 +42,14 @@ if (isset($_GET['url'])) {
                 
                 libxml_use_internal_errors(true); // Suppress HTML5 parsing warnings
                 $doc = new DOMDocument();
-                $doc->loadHTML($html);
+                @$doc->loadHTML($html);
                 libxml_clear_errors(); // Clear any errors
                 
                 $xpath = new DOMXPath($doc);
                 $allReviews = array_merge($allReviews, extractDetails($xpath, (10 * ($page - 1) + 1)));
             }
         }
-        echo json_encode($allReviews);
+        echo json_encode($allReviews, JSON_PRETTY_PRINT);
     } else {
         echo "No reviews.";
     }
@@ -49,23 +64,19 @@ function extractDetails($xpath, $serial = 1) {
     for ($i = 1; $i < ($elements->length - 1); $i++) {
         $element = $elements->item($i);
         $userNameQuery = $xpath->query(".//*[contains(@class, '_2NsDsF')]", $element);
-        if ($userNameQuery->length > 0) {
-            $title = $xpath->query(".//*[contains(@class, 'z9E0IG')]", $element)->item(0)->textContent;
-            $rating = $xpath->query(".//*[contains(@class, 'XQDdHH')]", $element)->item(0)->textContent;
-            $contentElement = $xpath->query(".//*[contains(@class, 'ZmyHeo')]", $element)->item(0);
-            $content = $contentElement->textContent;
-            $content = trim(str_replace("READ MORE", "", $content));
-            
-            if ($xpath->query(".//*[contains(@class, 'XQDdHH')]", $contentElement)->length > 0) {
-                $content = substr($content, 1);
-            }
-            $userName = $xpath->query(".//*[contains(@class, '_2NsDsF')]", $element)->item(0)->textContent;
-            $userAddress = $xpath->query(".//*[contains(@class, 'MztJPv')]/span[2]", $element)->item(0)->textContent;
-            $userAddress = str_replace(",", "", $userAddress);
-            $daysAgo = $xpath->query(".//*[contains(@class, '_2NsDsF')][last()]", $element)->item(0)->textContent;
-            $likes = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element)->item(0)->textContent;
-            $dislikes = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element)->item(1)->textContent;
-        }
+
+        $title = $xpath->query(".//*[contains(@class, 'z9E0IG')]", $element)->item(0)->textContent ?? null;
+        $rating = $xpath->query(".//*[contains(@class, 'XQDdHH')]", $element)->item(0)->textContent ?? null;
+        $contentElement = $xpath->query(".//*[contains(@class, 'ZmyHeo')]", $element)->item(0);
+        $content = $contentElement ? trim(str_replace("READ MORE", "", $contentElement->textContent)) : null;
+        $userName = $userNameQuery->length > 0 ? $userNameQuery->item(0)->textContent : null;
+        $userAddressQuery = $xpath->query(".//*[contains(@class, 'MztJPv')]/span[2]", $element);
+        $userAddress = $userAddressQuery->length > 0 ? str_replace(",", "", $userAddressQuery->item(0)->textContent) : null;
+        $daysAgoQuery = $xpath->query(".//*[contains(@class, '_2NsDsF')][last()]", $element);
+        $daysAgo = $daysAgoQuery->length > 0 ? $daysAgoQuery->item(0)->textContent : null;
+        $likesQuery = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element);
+        $likes = $likesQuery->length > 0 ? $likesQuery->item(0)->textContent : '0';
+        $dislikes = $likesQuery->length > 1 ? $likesQuery->item(1)->textContent : '0';
 
         if ($rating && $content && $userName && $daysAgo) {
             $allR[] = [
