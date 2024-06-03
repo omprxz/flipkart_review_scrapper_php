@@ -40,10 +40,10 @@ if (isset($_GET['url'])) {
                 $rvLink = product2reviewLink($url, $page);
                 $html = fetchContent($rvLink);
                 
-                libxml_use_internal_errors(true); // Suppress HTML5 parsing warnings
+                libxml_use_internal_errors(true);
                 $doc = new DOMDocument();
                 @$doc->loadHTML($html);
-                libxml_clear_errors(); // Clear any errors
+                libxml_clear_errors();
                 
                 $xpath = new DOMXPath($doc);
                 $allReviews = array_merge($allReviews, extractDetails($xpath, (10 * ($page - 1) + 1)));
@@ -69,9 +69,14 @@ function extractDetails($xpath, $serial = 1) {
         $rating = $xpath->query(".//*[contains(@class, 'XQDdHH')]", $element)->item(0)->textContent ?? null;
         $contentElement = $xpath->query(".//*[contains(@class, 'ZmyHeo')]", $element)->item(0);
         $content = $contentElement ? trim(str_replace("READ MORE", "", $contentElement->textContent)) : null;
+        if($contentElement){
+          if($xpath->query(".//*[contains(@class, 'XQDdHH')]", $contentElement) -> length > 0){
+            $content = substr($content, 1);
+          }
+        }
         $userName = $userNameQuery->length > 0 ? $userNameQuery->item(0)->textContent : null;
         $userAddressQuery = $xpath->query(".//*[contains(@class, 'MztJPv')]/span[2]", $element);
-        $userAddress = $userAddressQuery->length > 0 ? str_replace(",", "", $userAddressQuery->item(0)->textContent) : null;
+        $userAddress = $userAddressQuery->length > 0 ? str_replace(", ", "", $userAddressQuery->item(0)->textContent) : null;
         $daysAgoQuery = $xpath->query(".//*[contains(@class, '_2NsDsF')][last()]", $element);
         $daysAgo = $daysAgoQuery->length > 0 ? $daysAgoQuery->item(0)->textContent : null;
         $likesQuery = $xpath->query(".//div[contains(@class, 'qhmk-f')][1]//span[contains(@class, 'tl9VpF')]", $element);

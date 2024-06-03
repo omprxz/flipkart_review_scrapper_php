@@ -44,7 +44,6 @@ $(document).ready(function () {
   $(".getReviews").click(function () {
     let productLink = $("#productLink").val();
     if (productLink != '') {
-      //const reviewLink = product2reviewLink(productLink);
       loadReviewContent(productLink);
     } else {
       Toast.fire({
@@ -53,19 +52,6 @@ $(document).ready(function () {
       });
     }
   });
-
-  function product2reviewLink(link) {
-    const urlObj = new URL(link);
-    const pathname = urlObj.pathname;
-    const searchParams = new URLSearchParams(urlObj.search);
-    searchParams.delete("spotlightTagId");
-    searchParams.delete("q");
-    searchParams.delete("pageUID");
-    const newPathname = pathname.replace(/\/p\//,
-      "/product-reviews/");
-    const newUrl = urlObj.origin + newPathname + "?" + searchParams.toString();
-    return newUrl;
-  }
 
   function loadReviewContent(productLink) {
     $('#reviews-data').addClass('d-none');
