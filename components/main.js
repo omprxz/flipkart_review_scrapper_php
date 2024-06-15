@@ -2,7 +2,7 @@ const Toast = Swal.mixin({
   toast: true,
   position: 'top-end',
   showConfirmButton: false,
-  timer: 1500,
+  timer: 2000,
   timerProgressBar: true,
   didOpen: (toast) => {
     toast.addEventListener('mouseenter', Swal.stopTimer);
@@ -43,12 +43,13 @@ $(document).ready(function () {
 
   $(".getReviews").click(function () {
     let productLink = $("#productLink").val();
+    
     if (productLink != '') {
       loadReviewContent(productLink);
     } else {
       Toast.fire({
         title: 'Provide product link',
-        icon: 'error'
+        icon: 'warning'
       });
     }
   });
@@ -95,7 +96,13 @@ $(document).ready(function () {
         .prop("disabled", true);
       },
       success: function (data) {
-        console.log(data);
+        if(data.icon && data.icon !== 'success'){
+          Toast.fire({
+            title: data.message,
+            icon: data.icon
+          })
+          return 0;
+        }
         allReviews = [...data];
         if (allReviews.length > 0) {
           let formattedReviews = "";

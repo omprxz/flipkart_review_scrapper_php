@@ -21,10 +21,10 @@ if (isset($_GET['url'])) {
     $reviewLink = product2reviewLink($url);
     $html = fetchContent($reviewLink);
 
-    libxml_use_internal_errors(true); // Suppress HTML5 parsing warnings
+    libxml_use_internal_errors(true);
     $doc = new DOMDocument();
     @$doc->loadHTML($html);
-    libxml_clear_errors(); // Clear any errors
+    libxml_clear_errors();
 
     $xpath = new DOMXPath($doc);
     
@@ -49,7 +49,7 @@ if (isset($_GET['url'])) {
                 $allReviews = array_merge($allReviews, extractDetails($xpath, (10 * ($page - 1) + 1)));
             }
         }
-        echo json_encode($allReviews, JSON_PRETTY_PRINT);
+        echo json_encode($allReviews);
     } else {
         echo "No reviews.";
     }
@@ -101,27 +101,48 @@ function extractDetails($xpath, $serial = 1) {
     return $allR;
 }
 
-function product2reviewLink($link, $page = null) {
-    $url_obj = parse_url($link);
-    $pathname = $url_obj['path'];
-    parse_str($url_obj['query'], $search_params);
-    unset($search_params["spotlightTagId"]);
-    unset($search_params["q"]);
-    unset($search_params["pageUID"]);
-    
-    if ($page !== null) {
-        $search_params["page"] = $page;
+function isValidFlipkartUrl($url) {
+    $pattern = "/^https:\/\/www\.flipkart\.com\/[^\/]+\/p\/[^\/]+.*/";
+    if (preg_match($pattern, $url)) {
+        return true;
+    } else {
+        return false;
     }
-    
-    $new_pathname = str_replace("/p/", "/product-reviews/", $pathname);
-    $new_query = http_build_query($search_params);
-    $new_url = sprintf("%s://%s%s?%s%s",
-                       $url_obj['scheme'],
-                       $url_obj['host'],
-                       $new_pathname,
-                       $new_query,
-                       isset($url_obj['fragment']) ? "#" . $url_obj['fragment'] : "");
-    return $new_url;
+}
+
+function product2reviewLink($link, $page = null) {
+      if(!isValidFlipkartUrl($link)){
+        echo(json_encode(['message' => 'Invalid flipkart product url'.$redirectedLink, 'icon' => 'error']));
+        exit();
+      }
+    $url_obj = parse_url($link);
+$pathname = $url_obj['path'];
+parse_str($url_obj['query'] ?? '', $search_params);
+
+$unset_params = ["spotlightTagId", "q", "pageUID"];
+foreach ($unset_params as $param) {
+    if (isset($search_params[$param])) {
+        unset($search_params[$param]);
+    }
+}
+
+if ($page !== null) {
+    $search_params["page"] = $page;
+}
+
+$new_pathname = str_replace("/p/", "/product-reviews/", $pathname);
+$new_query = http_build_query($search_params);
+$new_url = sprintf("%s://%s%s%s",
+                   $url_obj['scheme'],
+                   $url_obj['host'],
+                   $new_pathname,
+                   !empty($new_query) ? '?' . $new_query : '');
+
+if (isset($url_obj['fragment'])) {
+    $new_url .= '#' . $url_obj['fragment'];
+}
+
+return $new_url;
 }
 
 function fetchContent($url) {

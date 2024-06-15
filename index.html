@@ -33,7 +33,6 @@
             }
             .overview-loader {
                 width: 100vw !important;
-                background: rgba(0, 0, 0, 0.1);
                 height: 500px !important;
             }
             .ai-score, .ai-progress{
@@ -221,7 +220,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- <script src="components/eruda.js"></script> -->
+        <script src="components/eruda.js"></script>
         <script src="components/main.js"></script>
 
         <script type="importmap">
@@ -297,17 +296,18 @@
                 );
                 try {
                     const model = genAI.getGenerativeModel({
-                        model: "gemini-1.5-pro"
+                        model: "gemini-1.5-flash"
                     });
                     const result = await model.generateContent(finalPrompt);
                     const response = await result.response;
                     const responseText = await response.text();
+                    //console.log(responseText)
                     const jsonRegex = /```json([^`]+)```/;
                     const respMatch = responseText.match(jsonRegex);
                     const responseJson = JSON.parse(respMatch[1].trim());
                     sentimentPercentage = Math.round(( sentimentScore/totalScore ) * 100)
                     
-                    responseJson.sentimentScore = sentimentPercentage
+                    //responseJson.sentimentScore = sentimentPercentage
                     $("#sentiment-progress")
                         .text(responseJson.sentimentScore + "%")
                         .css("width", responseJson.sentimentScore + "%")
@@ -333,7 +333,7 @@
                     $(".overview").addClass("d-block");
                     $(".overview").removeClass("d-none");
 
-                    //console.log(responseJson);
+                    console.log(responseJson);
                 } catch (error) {
                     console.error("Error generating response:", error);
                 }
